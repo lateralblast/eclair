@@ -1,0 +1,17 @@
+# Changes
+# 0.0.1: Sun  1 Jun 2014 10:33:19 EST
+# Initial working version
+# 0.0.2: Sun  1 Jun 2014 12:25:37 EST
+# Cleaned up code and added downgrade capability
+# 0.0.3: Mon  2 Jun 2014 12:10:54 EST
+# Added code to get patch information from VMware site
+# 0.0.4: Mon  2 Jun 2014 14:41:19 EST
+# Cleaned up code and fixed bugs
+# 0.0.5: Mon  2 Jun 2014 17:43:24 EST
+# Added handling for changing host keys
+# 0.0.6: Mon  2 Jun 2014 20:16:22 EST
+# Improved update code and fixed bugs
+# 0.0.7: Mon  2 Jun 2014 20:51:14 EST
+# More bug fixes
+# 0.0.8: Tue  3 Jun 2014 08:53:45 EST
+# Cleaned up documentation and did initial commit into github
