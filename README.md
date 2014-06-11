@@ -17,7 +17,17 @@ Eclair also has the capability of getting the latest patches from the WMware
 website. Due to the use of Javascript on the VMware download site this had to
 be achieved with a combination of the selenium-webdriver, phantomjs and nokogiri gems.
 
-Features:
+License
+-------
+
+This software is licensed as CC-BA (Creative Commons By Attrbution)
+
+http://creativecommons.org/licenses/by/4.0/legalcode
+
+Features
+--------
+
+Some of the features include:
 
 - Upgrade/Downgrade ESXi
   - From local repository or from VMware
@@ -27,7 +37,10 @@ Features:
 - Download any patches from the VMware site that are not in the local repository
 - The ESXi username and password can be stored in a local file so they don't appear on the command line
 
-Requirements:
+Requirements
+------------
+
+Required software to run exlair:
 
 - ruby
 - wget
@@ -41,7 +54,10 @@ Requirements:
   - phantomjs
   - nokogiri
 
-Issues:
+Issues
+------
+
+Issues encountered:
 
 - The URLs given by the VMware site are dynamic session based URLs, so will expire soon after the are created
   - If you are going to download them manually, you'll need to do it soon after you run the script
@@ -57,6 +73,8 @@ Todo:
 
 Usage
 -----
+
+You can find out the command line options available to you by using the -h option:
 
 ```
 $ eclair.rb -[AbCDf:hl:LP:r:Rs:Sp:u:UVyZ]

@@ -3,7 +3,8 @@
 # Name:         eclair (ESX Command Line Automation In Ruby)
 # Version:      0.0.8
 # Release:      1
-# License:      Open Source
+# License:      CC-BA (Creative Commons By Attrbution)
+#               http://creativecommons.org/licenses/by/4.0/legalcode
 # Group:        System
 # Source:       N/A
 # URL:          http://lateralblast.com.au/
