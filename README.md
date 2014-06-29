@@ -1,4 +1,4 @@
-![alt tag](https://raw.githubusercontent.com/lateralblast/eclair/master/eclair.jpg)
+![alt tag](https://raw.githubusercontent.com/lateralblast/eclair/master/VMware_Stack.png)
 
 ECLAIR
 ======
