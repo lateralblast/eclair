@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # Name:         eclair (ESX Command Line Automation In Ruby)
-# Version:      0.0.8
+# Version:      0.0.9
 # Release:      1
 # License:      CC-BA (Creative Commons By Attrbution)
 #               http://creativecommons.org/licenses/by/4.0/legalcode
@@ -381,12 +381,15 @@ def process_vmware_patch_info(patch_list,download,patchdir)
     local_file = patch_url.split(/\?/)[0]
     local_file = File.basename(local_file)
     local_file = patchdir+"/"+local_file
+    missing    = "n"
     if File.exist?(local_file)
       puts "Present:  "+local_file
+      missing = "n"
     else
       puts "Missing:  "+local_file
+      missing = "y"
     end
-    if download == "y"
+    if download == "y" and missing == "y"
       %x[wget "#{patch_url}" -O "#{local_file}"]
     end
   end

@@ -15,3 +15,5 @@
 # More bug fixes
 # 0.0.8: Tue  3 Jun 2014 08:53:45 EST
 # Cleaned up documentation and did initial commit into github
+# 0.0.9: Thu 28 Aug 2014 14:50:02 EST
+# Fixed bug with downloding patches to local repository
