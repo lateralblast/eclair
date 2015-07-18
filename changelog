@@ -17,3 +17,5 @@
 # Cleaned up documentation and did initial commit into github
 # 0.0.9: Thu 28 Aug 2014 14:50:02 EST
 # Fixed bug with downloding patches to local repository
+# 0.1.0: Sun 19 Jul 2015 02:19:33 AEST
+# Fixed several bugs

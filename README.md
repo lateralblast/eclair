@@ -53,6 +53,7 @@ Required software to run exlair:
   - selenium-webdriver
   - phantomjs
   - nokogiri
+  - io/console
 
 Issues
 ------

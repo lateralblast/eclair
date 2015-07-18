@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # Name:         eclair (ESX Command Line Automation In Ruby)
-# Version:      0.0.9
+# Version:      0.1.0
 # Release:      1
 # License:      CC-BA (Creative Commons By Attrbution)
 #               http://creativecommons.org/licenses/by/4.0/legalcode
@@ -21,6 +21,7 @@ require 'getopt/std'
 require 'selenium-webdriver'
 require 'phantomjs'
 require 'nokogiri'
+require 'io/console'
 
 # Set some defaults
 
@@ -234,7 +235,7 @@ def compare_versions(local_version,depot_version,mode)
   puts "Current:   "+local_version
   puts "Available: "+depot_version
   if mode =~ /up|check/
-    if depot_version > local_version
+    if depot_version.to_i > local_version.to_i
       puts "Depot patch level is newer than installed version"
       update_available = "y"
     else
@@ -242,7 +243,7 @@ def compare_versions(local_version,depot_version,mode)
       puts "Local patch level is up to date"
     end
   else
-    if depot_version < local_version
+    if depot_version.to_i < local_version.to_i
       puts "Depot patch level is lower than installed version"
       update_available = "y"
     else
@@ -281,7 +282,7 @@ def update_software(ssh_session,hostname,username,password,local_version,depot_v
         puts "Installing "+depot_version+" from "+depot_file
         output = ssh_session.exec!("esxcli software profile install -d=#{depot_file} -p=#{depot_version}")
       else
-        puts "Installing "+depot_version+" from "+depo_url
+        puts "Installing "+depot_version+" from "+depot_url
         ssh_session.exec!("esxcli network firewall ruleset set -e true -r httpClient")
         output = ssh_session.exec!("esxcli software profile update -d=#{depot_url} -p=#{depot_version}")
       end
@@ -349,6 +350,11 @@ def get_vmware_patch_info(product_url,username,password,release)
   update = ""
   driver = Selenium::WebDriver.for :phantomjs
   driver.get(product_url)
+  driver.find_element(:name => "username").send_keys(username)
+  driver.find_element(:name => "password").send_keys(password)
+  driver.find_element(:id => "button-login").click
+  driver.get(product_url)
+  driver.find_element(:name => "product").find_element(:css,"option[value='ESXi (Embedded and Installable)']").click
   driver.find_element(:name => "product").find_element(:css,"option[value='ESXi (Embedded and Installable)']").click
   driver.find_element(:name => "product").find_element(:css,"option[value='ESXi (Embedded and Installable)']").click
   driver.find_element(:name => "version").send_keys(release)
@@ -403,10 +409,22 @@ if opt["L"]
   exit
 end
 
+# Get password
+
+def get_password(password)
+  while password !~/[A-z]|[0-9]/ do
+    print "Password: "
+    password = STDIN.noecho(&:gets).chomp
+  end
+  puts
+  return password
+end
+  
+
 # If the password isn't given on the command line, try to retrieve it from
 # the .esxpasswd file. Otherwise ask for it.
 
-def get_password(esx_password_file,hostname)
+def get_esx_password(paasword,esx_password_file,hostname)
   if File.exist?(esx_password_file)
     all_check = %x[cat #{esx_password_file} |egrep "^\\*:|^ALL:"]
     if all_check.match(/\*|ALL/)
@@ -415,18 +433,26 @@ def get_password(esx_password_file,hostname)
       password = %x[cat #{esx_password_file} |grep '^#{hostname}' |cut -f3 -d:].chomp
     end
   else
-    while password !~/[A-z]|[0-9]/ do
-      print "Password: "
-      gets password
-    end
+    password = get_password(password)
   end
   return password
 end
 
+# Get username
+
+def get_username(username)
+  while username !~ /[A-z]/
+    print "Username: "
+    username = gets.chomp
+  end
+  return username
+end
+  
+
 # If the username isn't given on the command line, try to retrieve it from
 # the .esxpasswd file. Otherwise ask for it.
 
-def get_username(esx_password_file,hostname)
+def get_esx_username(username,esx_password_file,hostname)
   if File.exist?(esx_password_file)
     all_check = %x[cat #{esx_password_file} |egrep "^\\*:|^ALL:"]
     if all_check.match(/\*|ALL/)
@@ -435,10 +461,7 @@ def get_username(esx_password_file,hostname)
       username = %x[cat #{esx_password_file} |grep '^#{hostname}' |cut -f2 -d:].chomp
     end
   else
-    while username !~ /[A-z]/
-      print "Username: "
-      gets username
-    end
+    username = get_username(username)
   end
   return username
 end
@@ -462,6 +485,21 @@ end
 # Also checks if they are present in the local repository
 
 if opt["R"] or opt["A"]
+  puts "Enter VMware Web Site Login"
+  if username !~ /[A-z]/
+    if !opt["u"]
+      username = get_username(username)
+    else
+      username = opt["u"]
+    end
+  end
+  if password !~ /[A-z]/
+    if !opt["p"]
+      password = get_password(password)
+    else
+      password = opt["p"]
+    end
+  end
   patch_list = get_vmware_patch_info(product_url,username,password,release)
   process_vmware_patch_info(patch_list,download,patchdir)
   exit
@@ -474,18 +512,18 @@ if opt["U"] or opt["C"] or opt["D"]
   else
     hostname = opt["s"]
   end
-  if password !~ /[A-z]/
-    if !opt["p"]
-      password = get_password(esx_password_file,hostname)
-    else
-      password = opt["p"]
-    end
-  end
   if username !~ /[A-z]/
     if !opt["u"]
-      username = get_username(esx_password_file,hostname)
+      username = get_esx_username(username,esx_password_file,hostname)
     else
       username = opt["u"]
+    end
+  end
+  if password !~ /[A-z]/
+    if !opt["p"]
+      password = get_esx_password(password,esx_password_file,hostname)
+    else
+      password = opt["p"]
     end
   end
   if opt["f"]
