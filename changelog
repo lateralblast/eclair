@@ -19,3 +19,5 @@
 # Fixed bug with downloding patches to local repository
 # 0.1.0: Sun 19 Jul 2015 02:19:33 AEST
 # Fixed several bugs
+# 0.1.1: Sun 19 Jul 2015 10:51:36 AEST
+# Moved to vib based commands

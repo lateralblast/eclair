@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # Name:         eclair (ESX Command Line Automation In Ruby)
-# Version:      0.1.0
+# Version:      0.1.1
 # Release:      1
 # License:      CC-BA (Creative Commons By Attrbution)
 #               http://creativecommons.org/licenses/by/4.0/legalcode
@@ -55,6 +55,45 @@ if File.exist?(esx_password_file)
   %x[chmod 600 #{esx_password_file}]
 end
 
+# Compare versions
+
+def compare_ver(curr_fw,avail_fw)
+  ord_avail_fw = []
+  counter      = 0
+  avail_fw     = avail_fw.split(".")
+  while counter < avail_fw.length
+    digit = avail_fw[counter]
+    if digit.match(/[A-z]/)
+      ord_avail_fw[counter] = digit.ord
+    else
+      ord_avail_fw[counter] = digit
+    end
+    counter = counter+1
+  end
+  ord_avail_fw = ord_avail_fw.join(".")
+  avail_fw     = avail_fw.join(".")
+  ord_curr_fw  = []
+  counter      = 0
+  curr_fw      = curr_fw.split(".")
+  while counter < curr_fw.length
+    digit = curr_fw[counter]
+    if digit.match(/[A-z]/)
+      ord_curr_fw[counter] = digit.ord
+    else
+      ord_curr_fw[counter] = digit
+    end
+    counter = counter+1
+  end
+  ord_curr_fw  = ord_curr_fw.join(".")
+  curr_fw      = curr_fw.join(".")
+  versions     = [ ord_curr_fw, ord_avail_fw ]
+  latest_fw    = versions.map{ |v| (v.split '.').collect(&:to_i) }.max.join '.'
+  if latest_fw == ord_curr_fw
+    return curr_fw
+  else
+    return avail_fw
+  end
+end
 
 # Print usage information
 
@@ -193,7 +232,7 @@ end
 # Get the local version of update installed on and ES host
 
 def get_local_version(ssh_session,filename)
-  local_version = ssh_session.exec!("esxcli software profile get 2>&1 |head -1 |cut -f3 -d-").chomp
+  local_version = ssh_session.exec!("esxcli software vib list |grep 'esx-base' |awk '{print $2}'").chomp
   return ssh_session,local_version
 end
 
@@ -209,7 +248,10 @@ end
 def get_depot_version(ssh_session,filename,depot_url,os_version)
   if !filename.match(/[A-z]/)
     ssh_session.exec!("esxcli network firewall ruleset set -e true -r httpClient")
-    depot_version = ssh_session.exec!("esxcli software sources profile list -d #{depot_url} 2>&1 | grep '#{os_version}' |head -1 |awk '{print $1}'").chomp
+    depot_version = ssh_session.exec!("esxcli software sources vib list -d #{depot_url} 2>&1 | grep '#{os_version}' |grep 'esx-base' |grep Update |awk '{print $2}'").chomp
+    if !depot_version
+      depot_version = ssh_session.exec!("esxcli software sources vib list -d #{depot_url} 2>&1 | grep '#{os_version}' |grep 'esx-base' |grep Installed |awk '{print $2}'").chomp
+    end
   else
     tmp_dir = "/tmp/esxzip"
     if !File.directory?(tmp_dir)
@@ -227,15 +269,16 @@ end
 
 def compare_versions(local_version,depot_version,mode)
   if local_version.match(/-/)
-    local_version = local_version.gsub(/-standard/,"")
+    local_version = local_version.split(/-/)[1]
   end
   if depot_version.match(/-/)
-    depot_version = depot_version.split(/-/)[2]
+    depot_version = depot_version.split(/-/)[1]
   end
   puts "Current:   "+local_version
   puts "Available: "+depot_version
   if mode =~ /up|check/
-    if depot_version.to_i > local_version.to_i
+    avail_fw = compare_ver(local_version,depot_version)
+    if avail_fw.to_s != local_version.to_s
       puts "Depot patch level is newer than installed version"
       update_available = "y"
     else
@@ -269,7 +312,8 @@ def update_software(ssh_session,hostname,username,password,local_version,depot_v
       ssh_session.exec!("mkdir #{depot_dir}")
       puts "Copying local file "+filename+" to "+hostname+":"+depot_file
       Net::SCP.upload!(hostname, username, filename, depot_file, :ssh => { :password => password })
-      depot_version = ssh_session.exec!("esxcli software sources profile list -d=#{depot_file} |grep standard |awk '{print $1}'").chomp
+    else
+      depot_file = depot_url
     end
     if doaction != "y"
       while doaction !~ /y|n/
@@ -278,17 +322,11 @@ def update_software(ssh_session,hostname,username,password,local_version,depot_v
       end
     end
     if doaction == "y"
-      if filename.match(/[A-z]/)
-        puts "Installing "+depot_version+" from "+depot_file
-        output = ssh_session.exec!("esxcli software profile install -d=#{depot_file} -p=#{depot_version}")
-      else
-        puts "Installing "+depot_version+" from "+depot_url
-        ssh_session.exec!("esxcli network firewall ruleset set -e true -r httpClient")
-        output = ssh_session.exec!("esxcli software profile update -d=#{depot_url} -p=#{depot_version}")
-      end
+      puts "Installing "+depot_version+" from "+depot_file
+      output = ssh_session.exec!("esxcli software vib update -d=#{depot_file}")
     else
-      puts "Not installing patch "+local_version
-      exit
+      puts "Performing Dry Run - No updates will be installed"
+      output = ssh_session.exec!("esxcli software vib update -d=#{depot_file} --dry-run")
     end
     puts output
     if output.match(/Reboot Required: true/) and reboot == "y"

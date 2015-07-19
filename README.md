@@ -105,7 +105,60 @@ Examples
 Check update installed on ESX host against what is available on VMware site:
 
 ```
-$ eclair.rb -C -s 192.168.1.183
+$ ./eclair.rb -C -s 192.168.1.223
+Username: root
+Password: 
+Current:   0.8.2809111
+Available: 0.11.2809209
+Depot patch level is newer than installed version
+```
+
+Do a dry-run (answer no to install):
+
+```
+./eclair.rb -U -s 192.168.1.223
+Username: root
+Password: 
+Current:   0.8.2809111
+Available: 0.11.2809209
+Depot patch level is newer than installed version
+Install update [y,n]: n
+Performing Dry Run - No updates will be installed
+Installation Result
+   Message: Dryrun only, host not changed. The following installers will be applied: [BootBankInstaller, LockerInstaller]
+   Reboot Required: true
+   VIBs Installed: VMware_bootbank_esx-base_6.0.0-0.11.2809209, VMware_bootbank_lsu-lsi-lsi-mr3-plugin_1.0.0-2vmw.600.0.11.2809209, VMware_bootbank_lsu-lsi-megaraid-sas-plugin_1.0.0-2vmw.600.0.11.2809209, VMware_bootbank_misc-drivers_6.0.0-0.11.2809209, VMware_bootbank_sata-ahci_3.0-21vmw.600.0.11.2809209, VMware_bootbank_scsi-bnx2i_2.78.76.v60.8-1vmw.600.0.11.2809209, VMware_locker_tools-light_6.0.0-0.11.2809209
+   VIBs Removed: VMware_bootbank_esx-base_6.0.0-0.8.2809111, VMware_bootbank_lsu-lsi-lsi-mr3-plugin_1.0.0-1vmw.600.0.0.2494585, VMware_bootbank_lsu-lsi-megaraid-sas-plugin_1.0.0-1vmw.600.0.0.2494585, VMware_bootbank_misc-drivers_6.0.0-0.0.2494585, VMware_bootbank_sata-ahci_3.0-21vmw.600.0.0.2494585, VMware_bootbank_scsi-bnx2i_2.78.76.v60.8-1vmw.600.0.0.2494585, VMware_locker_tools-light_6.0.0-0.0.2494585
+   VIBs Skipped: VMWARE_bootbank_mtip32xx-native_3.8.5-1vmw.600.0.0.2494585, VMware_bootbank_ata-pata-amd_0.3.10-3vmw.600.0.0.2494585, VMware_bootbank_ata-pata-atiixp_0.4.6-4vmw.600.0.0.2494585, VMware_bootbank_ata-pata-cmd64x_0.2.5-3vmw.600.0.0.2494585, VMware_bootbank_ata-pata-hpt3x2n_0.3.4-3vmw.600.0.0.2494585, VMware_bootbank_ata-pata-pdc2027x_1.0-3vmw.600.0.0.2494585, VMware_bootbank_ata-pata-serverworks_0.4.3-3vmw.600.0.0.2494585, VMware_bootbank_ata-pata-sil680_0.4.8-3vmw.600.0.0.2494585, VMware_bootbank_ata-pata-via_0.3.3-2vmw.600.0.0.2494585, VMware_bootbank_block-cciss_3.6.14-10vmw.600.0.0.2494585, VMware_bootbank_cpu-microcode_6.0.0-0.0.2494585, VMware_bootbank_ehci-ehci-hcd_1.0-3vmw.600.0.0.2494585, VMware_bootbank_elxnet_10.2.309.6v-1vmw.600.0.0.2494585, VMware_bootbank_emulex-esx-elxnetcli_10.2.309.6v-0.0.2494585, VMware_bootbank_esx-dvfilter-generic-fastpath_6.0.0-0.0.2494585, VMware_bootbank_esx-tboot_6.0.0-0.0.2494585, VMware_bootbank_esx-xserver_6.0.0-0.0.2494585, VMware_bootbank_ima-qla4xxx_2.02.18-1vmw.600.0.0.2494585, VMware_bootbank_ipmi-ipmi-devintf_39.1-4vmw.600.0.0.2494585, VMware_bootbank_ipmi-ipmi-msghandler_39.1-4vmw.600.0.0.2494585, VMware_bootbank_ipmi-ipmi-si-drv_39.1-4vmw.600.0.0.2494585, VMware_bootbank_lpfc_10.2.309.8-2vmw.600.0.0.2494585, VMware_bootbank_lsi-mr3_6.605.08.00-6vmw.600.0.0.2494585, VMware_bootbank_lsi-msgpt3_06.255.12.00-7vmw.600.0.0.2494585, VMware_bootbank_lsu-hp-hpsa-plugin_1.0.0-1vmw.600.0.0.2494585, VMware_bootbank_lsu-lsi-lsi-msgpt3-plugin_1.0.0-1vmw.600.0.0.2494585, VMware_bootbank_lsu-lsi-mpt2sas-plugin_1.0.0-1vmw.600.0.0.2494585, VMware_bootbank_lsu-lsi-mptsas-plugin_1.0.0-1vmw.600.0.0.2494585, VMware_bootbank_misc-cnic-register_1.78.75.v60.7-1vmw.600.0.0.2494585, VMware_bootbank_net-bnx2_2.2.4f.v60.10-1vmw.600.0.0.2494585, VMware_bootbank_net-bnx2x_1.78.80.v60.12-1vmw.600.0.0.2494585, VMware_bootbank_net-cnic_1.78.76.v60.13-2vmw.600.0.0.2494585, VMware_bootbank_net-e1000_8.0.3.1-5vmw.600.0.0.2494585, VMware_bootbank_net-e1000e_2.5.4-6vmw.600.0.0.2494585, VMware_bootbank_net-enic_2.1.2.38-2vmw.600.0.0.2494585, VMware_bootbank_net-forcedeth_0.61-2vmw.600.0.0.2494585, VMware_bootbank_net-igb_5.0.5.1.1-5vmw.600.0.0.2494585, VMware_bootbank_net-ixgbe_3.7.13.7.14iov-20vmw.600.0.0.2494585, VMware_bootbank_net-mlx4-core_1.9.7.0-1vmw.600.0.0.2494585, VMware_bootbank_net-mlx4-en_1.9.7.0-1vmw.600.0.0.2494585, VMware_bootbank_net-nx-nic_5.0.621-5vmw.600.0.0.2494585, VMware_bootbank_net-tg3_3.131d.v60.4-1vmw.600.0.0.2494585, VMware_bootbank_net-vmxnet3_1.1.3.0-3vmw.600.0.0.2494585, VMware_bootbank_nmlx4-core_3.0.0.0-1vmw.600.0.0.2494585, VMware_bootbank_nmlx4-en_3.0.0.0-1vmw.600.0.0.2494585, VMware_bootbank_nmlx4-rdma_3.0.0.0-1vmw.600.0.0.2494585, VMware_bootbank_nvme_1.0e.0.35-1vmw.600.0.0.2494585, VMware_bootbank_ohci-usb-ohci_1.0-3vmw.600.0.0.2494585, VMware_bootbank_qlnativefc_2.0.12.0-5vmw.600.0.0.2494585, VMware_bootbank_rste_2.0.2.0088-4vmw.600.0.0.2494585, VMware_bootbank_sata-ata-piix_2.12-10vmw.600.0.0.2494585, VMware_bootbank_sata-sata-nv_3.5-4vmw.600.0.0.2494585, VMware_bootbank_sata-sata-promise_2.12-3vmw.600.0.0.2494585, VMware_bootbank_sata-sata-sil24_1.1-1vmw.600.0.0.2494585, VMware_bootbank_sata-sata-sil_2.3-4vmw.600.0.0.2494585, VMware_bootbank_sata-sata-svw_2.3-3vmw.600.0.0.2494585, VMware_bootbank_scsi-aacraid_1.1.5.1-9vmw.600.0.0.2494585, VMware_bootbank_scsi-adp94xx_1.0.8.12-6vmw.600.0.0.2494585, VMware_bootbank_scsi-aic79xx_3.1-5vmw.600.0.0.2494585, VMware_bootbank_scsi-bnx2fc_1.78.78.v60.8-1vmw.600.0.0.2494585, VMware_bootbank_scsi-fnic_1.5.0.45-3vmw.600.0.0.2494585, VMware_bootbank_scsi-hpsa_6.0.0.44-4vmw.600.0.0.2494585, VMware_bootbank_scsi-ips_7.12.05-4vmw.600.0.0.2494585, VMware_bootbank_scsi-megaraid-mbox_2.20.5.1-6vmw.600.0.0.2494585, VMware_bootbank_scsi-megaraid-sas_6.603.55.00-2vmw.600.0.0.2494585, VMware_bootbank_scsi-megaraid2_2.00.4-9vmw.600.0.0.2494585, VMware_bootbank_scsi-mpt2sas_19.00.00.00-1vmw.600.0.0.2494585, VMware_bootbank_scsi-mptsas_4.23.01.00-9vmw.600.0.0.2494585, VMware_bootbank_scsi-mptspi_4.23.01.00-9vmw.600.0.0.2494585, VMware_bootbank_scsi-qla4xxx_5.01.03.2-7vmw.600.0.0.2494585, VMware_bootbank_uhci-usb-uhci_1.0-3vmw.600.0.0.2494585, VMware_bootbank_xhci-xhci_1.0-2vmw.600.0.0.2494585
+```
+
+Update (answer yes to install) without reboot:
+
+```
+$ ./eclair.rb -U -s 192.168.1.223
+Username: root
+Password: 
+Current:   0.8.2809111
+Available: 0.11.2809209
+Depot patch level is newer than installed version
+Install update [y,n]: y
+Installing 6.0.0-0.11.2809209 from http://hostupdate.vmware.com/software/VUM/PRODUCTION/main/vmw-depot-index.xml
+Installation Result
+   Message: The update completed successfully, but the system needs to be rebooted for the changes to be effective.
+   Reboot Required: true
+   VIBs Installed: VMware_bootbank_esx-base_6.0.0-0.11.2809209, VMware_bootbank_lsu-lsi-lsi-mr3-plugin_1.0.0-2vmw.600.0.11.2809209, VMware_bootbank_lsu-lsi-megaraid-sas-plugin_1.0.0-2vmw.600.0.11.2809209, VMware_bootbank_misc-drivers_6.0.0-0.11.2809209, VMware_bootbank_sata-ahci_3.0-21vmw.600.0.11.2809209, VMware_bootbank_scsi-bnx2i_2.78.76.v60.8-1vmw.600.0.11.2809209, VMware_locker_tools-light_6.0.0-0.11.2809209
+   VIBs Removed: VMware_bootbank_esx-base_6.0.0-0.8.2809111, VMware_bootbank_lsu-lsi-lsi-mr3-plugin_1.0.0-1vmw.600.0.0.2494585, VMware_bootbank_lsu-lsi-megaraid-sas-plugin_1.0.0-1vmw.600.0.0.2494585, VMware_bootbank_misc-drivers_6.0.0-0.0.2494585, VMware_bootbank_sata-ahci_3.0-21vmw.600.0.0.2494585, VMware_bootbank_scsi-bnx2i_2.78.76.v60.8-1vmw.600.0.0.2494585, VMware_locker_tools-light_6.0.0-0.0.2494585
+   VIBs Skipped: VMWARE_bootbank_mtip32xx-native_3.8.5-1vmw.600.0.0.2494585, VMware_bootbank_ata-pata-amd_0.3.10-3vmw.600.0.0.2494585, VMware_bootbank_ata-pata-atiixp_0.4.6-4vmw.600.0.0.2494585, VMware_bootbank_ata-pata-cmd64x_0.2.5-3vmw.600.0.0.2494585, VMware_bootbank_ata-pata-hpt3x2n_0.3.4-3vmw.600.0.0.2494585, VMware_bootbank_ata-pata-pdc2027x_1.0-3vmw.600.0.0.2494585, VMware_bootbank_ata-pata-serverworks_0.4.3-3vmw.600.0.0.2494585, VMware_bootbank_ata-pata-sil680_0.4.8-3vmw.600.0.0.2494585, VMware_bootbank_ata-pata-via_0.3.3-2vmw.600.0.0.2494585, VMware_bootbank_block-cciss_3.6.14-10vmw.600.0.0.2494585, VMware_bootbank_cpu-microcode_6.0.0-0.0.2494585, VMware_bootbank_ehci-ehci-hcd_1.0-3vmw.600.0.0.2494585, VMware_bootbank_elxnet_10.2.309.6v-1vmw.600.0.0.2494585, VMware_bootbank_emulex-esx-elxnetcli_10.2.309.6v-0.0.2494585, VMware_bootbank_esx-dvfilter-generic-fastpath_6.0.0-0.0.2494585, VMware_bootbank_esx-tboot_6.0.0-0.0.2494585, VMware_bootbank_esx-xserver_6.0.0-0.0.2494585, VMware_bootbank_ima-qla4xxx_2.02.18-1vmw.600.0.0.2494585, VMware_bootbank_ipmi-ipmi-devintf_39.1-4vmw.600.0.0.2494585, VMware_bootbank_ipmi-ipmi-msghandler_39.1-4vmw.600.0.0.2494585, VMware_bootbank_ipmi-ipmi-si-drv_39.1-4vmw.600.0.0.2494585, VMware_bootbank_lpfc_10.2.309.8-2vmw.600.0.0.2494585, VMware_bootbank_lsi-mr3_6.605.08.00-6vmw.600.0.0.2494585, VMware_bootbank_lsi-msgpt3_06.255.12.00-7vmw.600.0.0.2494585, VMware_bootbank_lsu-hp-hpsa-plugin_1.0.0-1vmw.600.0.0.2494585, VMware_bootbank_lsu-lsi-lsi-msgpt3-plugin_1.0.0-1vmw.600.0.0.2494585, VMware_bootbank_lsu-lsi-mpt2sas-plugin_1.0.0-1vmw.600.0.0.2494585, VMware_bootbank_lsu-lsi-mptsas-plugin_1.0.0-1vmw.600.0.0.2494585, VMware_bootbank_misc-cnic-register_1.78.75.v60.7-1vmw.600.0.0.2494585, VMware_bootbank_net-bnx2_2.2.4f.v60.10-1vmw.600.0.0.2494585, VMware_bootbank_net-bnx2x_1.78.80.v60.12-1vmw.600.0.0.2494585, VMware_bootbank_net-cnic_1.78.76.v60.13-2vmw.600.0.0.2494585, VMware_bootbank_net-e1000_8.0.3.1-5vmw.600.0.0.2494585, VMware_bootbank_net-e1000e_2.5.4-6vmw.600.0.0.2494585, VMware_bootbank_net-enic_2.1.2.38-2vmw.600.0.0.2494585, VMware_bootbank_net-forcedeth_0.61-2vmw.600.0.0.2494585, VMware_bootbank_net-igb_5.0.5.1.1-5vmw.600.0.0.2494585, VMware_bootbank_net-ixgbe_3.7.13.7.14iov-20vmw.600.0.0.2494585, VMware_bootbank_net-mlx4-core_1.9.7.0-1vmw.600.0.0.2494585, VMware_bootbank_net-mlx4-en_1.9.7.0-1vmw.600.0.0.2494585, VMware_bootbank_net-nx-nic_5.0.621-5vmw.600.0.0.2494585, VMware_bootbank_net-tg3_3.131d.v60.4-1vmw.600.0.0.2494585, VMware_bootbank_net-vmxnet3_1.1.3.0-3vmw.600.0.0.2494585, VMware_bootbank_nmlx4-core_3.0.0.0-1vmw.600.0.0.2494585, VMware_bootbank_nmlx4-en_3.0.0.0-1vmw.600.0.0.2494585, VMware_bootbank_nmlx4-rdma_3.0.0.0-1vmw.600.0.0.2494585, VMware_bootbank_nvme_1.0e.0.35-1vmw.600.0.0.2494585, VMware_bootbank_ohci-usb-ohci_1.0-3vmw.600.0.0.2494585, VMware_bootbank_qlnativefc_2.0.12.0-5vmw.600.0.0.2494585, VMware_bootbank_rste_2.0.2.0088-4vmw.600.0.0.2494585, VMware_bootbank_sata-ata-piix_2.12-10vmw.600.0.0.2494585, VMware_bootbank_sata-sata-nv_3.5-4vmw.600.0.0.2494585, VMware_bootbank_sata-sata-promise_2.12-3vmw.600.0.0.2494585, VMware_bootbank_sata-sata-sil24_1.1-1vmw.600.0.0.2494585, VMware_bootbank_sata-sata-sil_2.3-4vmw.600.0.0.2494585, VMware_bootbank_sata-sata-svw_2.3-3vmw.600.0.0.2494585, VMware_bootbank_scsi-aacraid_1.1.5.1-9vmw.600.0.0.2494585, VMware_bootbank_scsi-adp94xx_1.0.8.12-6vmw.600.0.0.2494585, VMware_bootbank_scsi-aic79xx_3.1-5vmw.600.0.0.2494585, VMware_bootbank_scsi-bnx2fc_1.78.78.v60.8-1vmw.600.0.0.2494585, VMware_bootbank_scsi-fnic_1.5.0.45-3vmw.600.0.0.2494585, VMware_bootbank_scsi-hpsa_6.0.0.44-4vmw.600.0.0.2494585, VMware_bootbank_scsi-ips_7.12.05-4vmw.600.0.0.2494585, VMware_bootbank_scsi-megaraid-mbox_2.20.5.1-6vmw.600.0.0.2494585, VMware_bootbank_scsi-megaraid-sas_6.603.55.00-2vmw.600.0.0.2494585, VMware_bootbank_scsi-megaraid2_2.00.4-9vmw.600.0.0.2494585, VMware_bootbank_scsi-mpt2sas_19.00.00.00-1vmw.600.0.0.2494585, VMware_bootbank_scsi-mptsas_4.23.01.00-9vmw.600.0.0.2494585, VMware_bootbank_scsi-mptspi_4.23.01.00-9vmw.600.0.0.2494585, VMware_bootbank_scsi-qla4xxx_5.01.03.2-7vmw.600.0.0.2494585, VMware_bootbank_uhci-usb-uhci_1.0-3vmw.600.0.0.2494585, VMware_bootbank_xhci-xhci_1.0-2vmw.600.0.0.2494585
+```
+
+
+Older Examples
+--------------
+
+Check update installed on ESX host against what is available on VMware site:
+
+```
+$ ./eclair.rb -C -s 192.168.1.183
 Current:   20140404001
 Available: 20140404001
 Local patch level is up to date
@@ -114,7 +167,7 @@ Local patch level is up to date
 Check update installed on ESX host against a patch ID in the local repository:
 
 ```
-$ eclair.rb -C -s 192.168.1.183 -f ESXi550-201404020
+$ ./eclair.rb -C -s 192.168.1.183 -f ESXi550-201404020
 File:  /Users/spindler/Code/eclair/patches/ESXi550-201404020.zip
 Current:   20140302001
 Available: 20140401020s
@@ -124,7 +177,7 @@ Depot patch level is newer than installed version
 Check update installed on ESX host against a patch file in the local repository:
 
 ```
-$ eclair.rb -C -s 192.168.1.183 -f ./patches/ESXi550-201404020.zip
+$ ./eclair.rb -C -s 192.168.1.183 -f ./patches/ESXi550-201404020.zip
 File:  /Users/spindler/Code/eclair/patches/ESXi550-201404020.zip
 Current:   20140302001
 Available: 20140401020s
@@ -134,7 +187,7 @@ Depot patch level is newer than installed version
 Updating an ESXi host from a patch in the local repository (without confirmation and reboot):
 
 ```
-$ eclair.rb -U -s 192.168.1.183 -f ESXi550-201404001 -y -b
+$ ./eclair.rb -U -s 192.168.1.183 -f ESXi550-201404001 -y -b
 File:  /Users/spindler/Code/eclair/patches/ESXi550-201404001.zip
 Current:   20140302001
 Available: 20140404001
@@ -185,7 +238,7 @@ Rebooting
 Get a list of the available patches for ESXi for 5.1.0:
 
 ```
-$ eclair.rb -R -r 5.1.0
+$ ./eclair.rb -R -r 5.1.0
 Update:   ESXi510-201404001
 Download: https://download2.vmware.com/patch/software/VUM/OFFLINE/release-431-20140427-641697/ESXi510-201404001.zip?HashKey=b67d1404781d0d791f4f911065073499&AuthKey=1401676093_4dc39ad8083dbde1c34e6e526a5
 45d5e
@@ -223,7 +276,7 @@ Missing:  /Users/spindler/Code/eclair/patches/ESXi510-201210001.zip
 List the patches in the local repository:
 
 ```
-$ eclair.rb -L
+$ ./eclair.rb -L
 ESXi550-201404001.zip
 ESXi550-201404020.zip
 ```
