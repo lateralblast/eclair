@@ -25,3 +25,5 @@
 # Improved password file handling
 # 0.1.3: Sun 19 Jul 2015 18:38:23 AEST
 # Minor update to improve vib version processing
+# 0.1.4: Sun 19 Jul 2015 19:27:30 AEST
+# Added code to install license keys

@@ -290,6 +290,187 @@ be1a3
 Missing:  /Users/spindler/Code/eclair/patches/ESXi510-201210001.zip
 ```
 
+Show license keys:
+
+```
+$ ./eclair.rb -k -s 192.168.1.224
+Username: root
+Password: 
+[200] Sending request for installed licenses...[200] Complete, result is:
+   serial: 00000-00000-00000-00000-00000
+   vmodl key: eval
+   name: Evaluation Mode
+   total: 1
+   used:  1
+   unit: host
+   Properties:
+     [ProductName] = VMware ESX Server
+     [ProductVersion] = 6.0
+     [evaluation] = License has not been set, evaluation Period in effect.
+     [expirationHours] = 1439
+     [expirationMinutes] = 5
+     [expirationDate] = 2015-09-17T08:32:29.125538Z
+     [system_time] = 2015-07-19T09:27:29.130636Z
+     [feature] = vsmp:0 ("Unlimited virtual SMP")
+     [feature] = h264remote ("H.264 for Remote Console Connections")
+     [feature] = esxHost ("vCenter agent for VMware host")
+     [feature] = vimapi ("vSphere API")
+     [feature] = vstorage ("Storage APIs")
+     [feature] = vmsafe ("VMsafe")
+     [feature] = vmotion ("vSphere vMotion")
+     [feature] = xswitchvmotion ("X-Switch vMotion")
+     [feature] = das ("vSphere HA")
+     [feature] = dr ("vSphere Data Protection")
+     [feature] = endpoint ("vShield Endpoint")
+     [feature] = replication ("vSphere Replication")
+     [feature] = vshield ("vShield Zones")
+     [feature] = hotplug ("Hot-Pluggable virtual HW")
+     [feature] = svmotion ("vSphere Storage vMotion")
+     [feature] = smartcard ("Shared Smart Card Reader")
+     [feature] = ft:4 ("vSphere FT (up to 4 virtual CPUs)")
+     [feature] = vvolumes ("Virtual Volumes")
+     [feature] = storageawarenessapi ("APIs for Storage Awareness")
+     [feature] = spbm ("Storage-Policy Based Management")
+     [feature] = drs ("vSphere DRS")
+     [feature] = serialuri:2 ("Remote virtual Serial Port Concentrator")
+     [feature] = mpio ("MPIO / Third-Party Multi-Pathing")
+     [feature] = vaai ("vSphere Storage APIs for Array Integration")
+     [feature] = bigdataex ("Big Data Extensions")
+     [feature] = rem ("Reliable Memory")
+     [feature] = dvs ("vSphere Distributed Switch")
+     [feature] = hostprofile ("vSphere Host Profiles")
+     [feature] = autodeploy ("vSphere Auto Deploy")
+     [feature] = sriov ("SR-IOV")
+     [feature] = sioshares ("vSphere Storage I/O Control")
+     [feature] = dpvmotion ("Direct Path vMotion")
+     [feature] = storagedrs ("vSphere Storage DRS")
+     [feature] = metrovmotion ("vSphere vMotion Metro")
+     [feature] = viewaccel ("vSphere View Accelerator")
+     [feature] = appha ("vSphere App HA")
+     [feature] = vflash ("vSphere Flash Read Cache")
+     [feature] = contentlib ("Content Library")
+     [feature] = xvcvmotion ("Cross Virtual Center vMotion")
+     [feature] = vgpu ("vGPU")
+     [FileVersion] = 6.0.0.11
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e16-suite-vsom-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e18-robo-c3-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e4-c2-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e2-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e6-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e4-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e8-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e11-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e9-eoem-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e8-eoem-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e7-eoem-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e1-eoem-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e2-eoem-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e17-suite-vsom-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e14-suite-vcloud5-c1-201006
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e14-suite-vcloud6-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e6-sub-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e7-sub-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e13-suite-vcloud5-c1-201006
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e13-suite-vcloud6-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e5-sub-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-eval-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e12-suite-vcloud5-c1-201006
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e12-suite-vcloud6-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e3-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e1-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e7-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e3-c2-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e5-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e9-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e10-c3-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e5-robo-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e7-robo-c3-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e6-robo-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e15-suite-vsom-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e8-sub-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e9-sub-c1-201306
+     [Localized] = <Not supported type for value: 0x1f2b8ce0>
+
+[200] End of report.
+```
+
+Install license key:
+
+```
+$ ./eclair.rb -s 192.168.1.224 -K AAAAA-BBBBB-CCCCC-DDDDD-EEEEE
+Username: root
+Password: 
+
+   serial: AAAAA-BBBBB-CCCCC-DDDDD-EEEEE
+   vmodl key: esx.essentialsPlus.cpuPackage
+   name: VMware vSphere 6 Essentials Plus
+   total: 0
+   used:  1
+   unit: cpuPackage
+   Properties:
+     [ProductName] = VMware ESX Server
+     [ProductVersion] = 6.0
+     [count_disabled] = This license is unlimited
+     [feature] = vsmp:0 ("Unlimited virtual SMP")
+     [feature] = h264remote ("H.264 for Remote Console Connections")
+     [feature] = esxHost ("vCenter agent for VMware host")
+     [feature] = vimapi ("vSphere API")
+     [feature] = vstorage ("Storage APIs")
+     [feature] = vmsafe ("VMsafe")
+     [feature] = vmotion ("vSphere vMotion")
+     [feature] = xswitchvmotion ("X-Switch vMotion")
+     [feature] = das ("vSphere HA")
+     [feature] = dr ("vSphere Data Protection")
+     [feature] = endpoint ("vShield Endpoint")
+     [feature] = replication ("vSphere Replication")
+     [feature] = vshield ("vShield Zones")
+     [addon] = hotplug ("Hot-Pluggable virtual HW")
+     [addon] = drs ("vSphere DRS")
+     [addon] = svmotion ("vSphere Storage vMotion")
+     [FileVersion] = 6.0.0.11
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e16-suite-vsom-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e18-robo-c3-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e4-c2-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e2-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e6-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e4-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e8-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e11-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e9-eoem-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e8-eoem-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e7-eoem-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e1-eoem-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e2-eoem-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e17-suite-vsom-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e14-suite-vcloud5-c1-201006
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e14-suite-vcloud6-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e6-sub-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e7-sub-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e13-suite-vcloud5-c1-201006
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e13-suite-vcloud6-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e5-sub-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-eval-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e12-suite-vcloud5-c1-201006
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e12-suite-vcloud6-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e3-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e1-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e7-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e3-c2-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e5-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e9-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e10-c3-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e5-robo-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e7-robo-c3-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e6-robo-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e15-suite-vsom-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e8-sub-c1-201306
+     [LicenseFilePath] = /usr/lib/vmware/licenses/site/license-esx-60-e9-sub-c1-201306
+     [Localized] = <Not supported type for value: 0x1f2b8590>
+[200] Command Complete.
+Result: Success
+
+```
+
 List the patches in the local repository:
 
 ```

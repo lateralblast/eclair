@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # Name:         eclair (ESX Command Line Automation In Ruby)
-# Version:      0.1.3
+# Version:      0.1.4
 # Release:      1
 # License:      CC-BA (Creative Commons By Attrbution)
 #               http://creativecommons.org/licenses/by/4.0/legalcode
@@ -26,7 +26,7 @@ require 'io/console'
 # Set some defaults
 
 script    = $0
-options   = "AbCDf:hl:LP:r:Rs:Sp:u:UVyZ"
+options   = "AbCDf:hl:kK:LP:r:Rs:Sp:u:UVyZ"
 username  = ""
 password  = ""
 mode      = "check"
@@ -126,6 +126,8 @@ def print_usage(script,options)
   puts "-S:\tSetup ESXi (Syslog, NTP, etc)"
   puts "-l:\tCheck if a particular patch is in the local repository"
   puts "-b:\tPerform reboot after patch installation (not default)"
+  puts "-k:\tShow license keys"
+  puts "-K:\tInstall license key"
   puts
   return
 end
@@ -174,6 +176,16 @@ end
 
 if opt["h"]
   print_usage(script,options)
+end
+
+# If given -K set license key
+
+if opt["K"]
+  license_key = opt["K"]
+end
+
+if opt["k"]
+  license_key = "show"
 end
 
 # Set local patch director if given -P options
@@ -346,6 +358,38 @@ def update_software(ssh_session,hostname,username,password,local_version,depot_v
   return ssh_session
 end
 
+# Install license key
+
+def install_license_key(hostname,username,password,license_key)
+  begin
+    Net::SSH.start(hostname, username, :password => password, :paranoid => false) do |ssh_session|
+      if license_key == "show"
+        output = ssh_session.exec!("vim-cmd vimsvc/license --show")
+      else
+        output = ssh_session.exec!("vim-cmd vimsvc/license --set #{license_key}")
+      end
+      puts output
+      return
+    end
+  rescue Net::SSH::HostKeyMismatch => host
+    puts "Existing key found for "+hostname
+        if doaction != "y"
+      while doaction !~ /y|n/
+        print "Update host key [y,n]: "
+        doaction = gets.chomp
+      end
+    end
+    if doaction == "y"
+      puts "Updating host key for "+hostname
+      host.remember_host!
+    else
+      exit
+    end
+    retry
+  end
+  return
+end
+
 # Main routing called to Update/Downgrade ESX software
 
 def update_esxi(hostname,username,password,filename,mode,doaction,depot_url,reboot)
@@ -507,7 +551,6 @@ def get_username(username)
   return username
 end
   
-
 # If the username isn't given on the command line, try to retrieve it from
 # the .esxpasswd file. Otherwise ask for it.
 
@@ -576,7 +619,7 @@ if opt["R"] or opt["A"]
   exit
 end
 
-if opt["U"] or opt["C"] or opt["D"]
+if opt["U"] or opt["C"] or opt["D"] or opt["K"] or opt["k"]
   if !opt["s"]
     puts "No server name given"
     exit
@@ -597,13 +640,17 @@ if opt["U"] or opt["C"] or opt["D"]
       password = opt["p"]
     end
   end
-  if opt["f"]
-    filename = opt["f"]
-    filename = check_file(filename,patchdir)
-  end
-  hostname = opt["s"]
-  if opt["U"] or opt["C"] or opt["Z"]
-    update_esxi(hostname,username,password,filename,mode,doaction,depot_url,reboot)
+  if opt["K"] or opt["k"]
+    install_license_key(hostname,username,password,license_key)
+  else
+    if opt["f"]
+      filename = opt["f"]
+      filename = check_file(filename,patchdir)
+    end
+    hostname = opt["s"]
+    if opt["U"] or opt["C"] or opt["Z"]
+      update_esxi(hostname,username,password,filename,mode,doaction,depot_url,reboot)
+    end
   end
   exit
 end
