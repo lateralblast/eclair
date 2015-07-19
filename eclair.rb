@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # Name:         eclair (ESX Command Line Automation In Ruby)
-# Version:      0.1.4
+# Version:      0.1.6
 # Release:      1
 # License:      CC-BA (Creative Commons By Attrbution)
 #               http://creativecommons.org/licenses/by/4.0/legalcode
@@ -26,7 +26,7 @@ require 'io/console'
 # Set some defaults
 
 script    = $0
-options   = "AbCDf:hl:kK:LP:r:Rs:Sp:u:UVyZ"
+options   = "AbCDef:Hhl:kK:LMP:r:Rs:Sp:u:UVyZ"
 username  = ""
 password  = ""
 mode      = "check"
@@ -114,7 +114,7 @@ def print_usage(script,options)
   puts "-U:\tUpdate ESX if newer patch level is available"
   puts "-Z:\tDowngrade ESX to earlier release"
   puts "-L:\tList all available versions in local patch directory"
-  puts "-R:\tList all available versions in VMware depot"
+  puts "-M:\tList all available versions in VMware depot"
   puts "-A:\tDownload available patches to local patch directory"
   puts "-C:\tCheck if newer patch level is available"
   puts "-r:\tUpgrade or downgrade to a specific release"
@@ -128,6 +128,9 @@ def print_usage(script,options)
   puts "-b:\tPerform reboot after patch installation (not default)"
   puts "-k:\tShow license keys"
   puts "-K:\tInstall license key"
+  puts "-R:\tReboot server"
+  puts "-H:\tShutdown server"
+  puts "-e:\tExecute a command on a server"
   puts
   return
 end
@@ -182,10 +185,11 @@ end
 
 if opt["K"]
   license_key = opt["K"]
+  command     = "vim-cmd vimsvc/license --set #{license_key}"
 end
 
 if opt["k"]
-  license_key = "show"
+  command = "vim-cmd vimsvc/license --show"
 end
 
 # Set local patch director if given -P options
@@ -358,16 +362,14 @@ def update_software(ssh_session,hostname,username,password,local_version,depot_v
   return ssh_session
 end
 
-# Install license key
+# Run a command on the server
 
-def install_license_key(hostname,username,password,license_key)
+def control_server(hostname,username,password,command)
+  puts "Server:  "+hostname
+  puts "Command: "+command
   begin
     Net::SSH.start(hostname, username, :password => password, :paranoid => false) do |ssh_session|
-      if license_key == "show"
-        output = ssh_session.exec!("vim-cmd vimsvc/license --show")
-      else
-        output = ssh_session.exec!("vim-cmd vimsvc/license --set #{license_key}")
-      end
+      output = ssh_session.exec!(command)
       puts output
       return
     end
@@ -595,10 +597,22 @@ if opt["A"]
   download = "y"
 end
 
+# If given -H shutdown server (halt)
+
+if opt["H"]
+  command = "halt"
+end
+
+# If given -R reboot server
+
+if opt["R"]
+  command = "reboot"
+end
+
 # If given the -A or -R option check the available patches on the VMware site
 # Also checks if they are present in the local repository
 
-if opt["R"] or opt["A"]
+if opt["M"] or opt["A"]
   puts "Enter VMware Web Site Login"
   if username !~ /[A-z]/
     if !opt["u"]
@@ -619,7 +633,7 @@ if opt["R"] or opt["A"]
   exit
 end
 
-if opt["U"] or opt["C"] or opt["D"] or opt["K"] or opt["k"]
+if opt["U"] or opt["C"] or opt["D"] or opt["K"] or opt["k"] or opt["H"] or opt["R"] or opt["e"]
   if !opt["s"]
     puts "No server name given"
     exit
@@ -640,8 +654,8 @@ if opt["U"] or opt["C"] or opt["D"] or opt["K"] or opt["k"]
       password = opt["p"]
     end
   end
-  if opt["K"] or opt["k"]
-    install_license_key(hostname,username,password,license_key)
+  if opt["K"] or opt["k"] or opt["H"] or opt["R"] or opt["e"]
+    control_server(hostname,username,password,command)
   else
     if opt["f"]
       filename = opt["f"]

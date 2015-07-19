@@ -95,25 +95,30 @@ Usage
 You can find out the command line options available to you by using the -h option:
 
 ```
-$ eclair.rb -[AbCDf:hl:LP:r:Rs:Sp:u:UVyZ]
+Usage: eclair.rb -[AbCDef:Hhl:kK:LMP:r:Rs:Sp:u:UVyZ]
 
--h:     Print usage information
--V:     Print version information
--U:     Update ESX if newer patch level is available
--Z:     Downgrade ESX to earlier release
--L:     List all available versions in local patch directory
--R:     List all available versions in VMware depot
--A:     Download available patches to local patch directory
--C:     Check if newer patch level is available
--r:     Upgrade or downgrade to a specific release
--s:     Hostname
--p:     Password
--f:     Source file for update
--D:     Patch directory (default is patches in sames directory as script)
--y:     Perform action (if not given you will be prompted before upgrades)
--S:     Setup ESXi (Syslog, NTP, etc)
--l:     Check if a particular patch is in the local repository
--b:     Perform reboot after patch installation (not default)
+-h:	Print usage information
+-V:	Print version information
+-U:	Update ESX if newer patch level is available
+-Z:	Downgrade ESX to earlier release
+-L:	List all available versions in local patch directory
+-M:	List all available versions in VMware depot
+-A:	Download available patches to local patch directory
+-C:	Check if newer patch level is available
+-r:	Upgrade or downgrade to a specific release
+-s:	Hostname
+-p:	Password
+-f:	Source file for update
+-D:	Patch directory (default is patches in sames directory as script)
+-y:	Perform action (if not given you will be prompted before upgrades)
+-S:	Setup ESXi (Syslog, NTP, etc)
+-l:	Check if a particular patch is in the local repository
+-b:	Perform reboot after patch installation (not default)
+-k:	Show license keys
+-K:	Install license key
+-R:	Reboot server
+-H:	Shutdown server
+-e:	Execute a command on a server
 ```
 
 Examples
