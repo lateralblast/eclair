@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # Name:         eclair (ESX Command Line Automation In Ruby)
-# Version:      0.1.1
+# Version:      0.1.2
 # Release:      1
 # License:      CC-BA (Creative Commons By Attrbution)
 #               http://creativecommons.org/licenses/by/4.0/legalcode
@@ -33,12 +33,13 @@ mode      = "check"
 doaction  = ""
 filename  = ""
 patchdir  = Dir.pwd+"/patches"
-release   = "5.5.0"
+release   = "6.0.0"
 download  = "n"
 reboot    = "n"
 
 # VMware URLs
 
+login_url   = "https://my.vmware.com/web/vmware/login"
 product_url = "https://www.vmware.com/patchmgr/findPatch.portal"
 depot_url   = "http://hostupdate.vmware.com/software/VUM/PRODUCTION/main/vmw-depot-index.xml"
 
@@ -47,12 +48,19 @@ depot_url   = "http://hostupdate.vmware.com/software/VUM/PRODUCTION/main/vmw-dep
 # If all systems have the same username and password then an entry of:
 # ALL:username:password or *:username:password will work
 
-esx_password_file = Etc.getpwuid.dir+"/.esxpasswd"
+esx_password_file    = Etc.getpwuid.dir+"/.esxpasswd"
+vmware_password_file = Etc.getpwuid.dir+"/.vmwarepasswd"
 
-# If file exists give it sensible permissions
+# If password files exist give them sensible permissions
 
-if File.exist?(esx_password_file)
-  %x[chmod 600 #{esx_password_file}]
+[ esx_password_file, vmware_password_file ].each do |password_file|
+  if File.exist?(password_file)
+    file_stat = File.stat(password_file)
+    file_mode = file_stat.mode.to_i
+    if file_mode !~ /600/
+      %x[chmod 600 #{password_file}]
+    end
+  end
 end
 
 # Compare versions
@@ -383,13 +391,13 @@ end
 # Need to send dropdown box seletions twice to ensure they stick
 # Need to search for button to click via src tag due to malformed HTML
 
-def get_vmware_patch_info(product_url,username,password,release)
+def get_vmware_patch_info(login_url,product_url,username,password,release)
   update_list = {}
   update = ""
   driver = Selenium::WebDriver.for :phantomjs
-  driver.get(product_url)
-  driver.find_element(:name => "username").send_keys(username)
-  driver.find_element(:name => "password").send_keys(password)
+  driver.get(login_url)
+  driver.find_element(:id => "username").send_keys(username)
+  driver.find_element(:id => "password").send_keys(password)
   driver.find_element(:id => "button-login").click
   driver.get(product_url)
   driver.find_element(:name => "product").find_element(:css,"option[value='ESXi (Embedded and Installable)']").click
@@ -476,6 +484,18 @@ def get_esx_password(paasword,esx_password_file,hostname)
   return password
 end
 
+# If the password isn't given on the command line, try to retrieve it from
+# the .vmwarepasswd file. Otherwise ask for it.
+
+def get_vmware_password(password,vmware_password_file)
+  if File.exist?(vmware_password_file)
+    password = %x[cat #{vmware_password_file} |cut -f2 -d:].chomp
+  else
+    password = get_username(password)
+  end
+  return password
+end
+
 # Get username
 
 def get_username(username)
@@ -504,6 +524,18 @@ def get_esx_username(username,esx_password_file,hostname)
   return username
 end
 
+# If the username isn't given on the command line, try to retrieve it from
+# the .vmwarepasswd file. Otherwise ask for it.
+
+def get_vmware_username(username,vmware_password_file)
+  if File.exist?(vmware_password_file)
+    username = %x[cat #{vmware_password_file} |cut -f1 -d:].chomp
+  else
+    username = get_username(username)
+  end
+  return username
+end
+
 # Check if a particular patch is in the local repository
 
 if opt["l"]
@@ -526,19 +558,19 @@ if opt["R"] or opt["A"]
   puts "Enter VMware Web Site Login"
   if username !~ /[A-z]/
     if !opt["u"]
-      username = get_username(username)
+      username = get_vmware_username(username,vmware_password_file)
     else
       username = opt["u"]
     end
   end
   if password !~ /[A-z]/
     if !opt["p"]
-      password = get_password(password)
+      password = get_vmware_password(password,vmware_password_file)
     else
       password = opt["p"]
     end
   end
-  patch_list = get_vmware_patch_info(product_url,username,password,release)
+  patch_list = get_vmware_patch_info(login_url,product_url,username,password,release)
   process_vmware_patch_info(patch_list,download,patchdir)
   exit
 end

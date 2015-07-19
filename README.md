@@ -55,6 +55,23 @@ Required software to run exlair:
   - nokogiri
   - io/console
 
+Installation
+------------
+
+```
+$ brew install wget
+$ gem install net-ssh
+$ gem install net-scp
+$ gem install etc
+$ grem install expect
+$ gem install getopt
+$ gem install selenium
+$ selenium install
+$ gem install selenium-wbedriver
+$ gem install phantomjs
+$ gem install nokogiri -- --use-system--libraries
+```
+
 Issues
 ------
 
