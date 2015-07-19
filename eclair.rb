@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # Name:         eclair (ESX Command Line Automation In Ruby)
-# Version:      0.1.2
+# Version:      0.1.3
 # Release:      1
 # License:      CC-BA (Creative Commons By Attrbution)
 #               http://creativecommons.org/licenses/by/4.0/legalcode
@@ -256,10 +256,11 @@ end
 def get_depot_version(ssh_session,filename,depot_url,os_version)
   if !filename.match(/[A-z]/)
     ssh_session.exec!("esxcli network firewall ruleset set -e true -r httpClient")
-    depot_version = ssh_session.exec!("esxcli software sources vib list -d #{depot_url} 2>&1 | grep '#{os_version}' |grep 'esx-base' |grep Update |awk '{print $2}'").chomp
+    depot_version = ssh_session.exec!("esxcli software sources vib list -d #{depot_url} 2>&1 | grep '#{os_version}' |grep 'esx-base' |grep Update |awk '{print $2}' |tail -1")
     if !depot_version
-      depot_version = ssh_session.exec!("esxcli software sources vib list -d #{depot_url} 2>&1 | grep '#{os_version}' |grep 'esx-base' |grep Installed |awk '{print $2}'").chomp
+      depot_version = ssh_session.exec!("esxcli software sources vib list -d #{depot_url} 2>&1 | grep '#{os_version}' |grep 'esx-base' |grep Installed |awk '{print $2}' |tail -1")
     end
+    depot_version = depot_version.chomp 
   else
     tmp_dir = "/tmp/esxzip"
     if !File.directory?(tmp_dir)
