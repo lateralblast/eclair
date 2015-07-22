@@ -31,3 +31,5 @@
 # Added function to run command on remote server
 # 0.1.6: Mon 20 Jul 2015 08:13:18 AEST
 # Consolidated halt, reboot, and license key functions into one generic function
+# 0.1.7: Wed 22 Jul 2015 13:24:05 AEST
+# Added -B option to backup configuration of ESX server

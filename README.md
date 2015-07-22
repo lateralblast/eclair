@@ -99,6 +99,7 @@ Usage: eclair.rb -[AbCDef:Hhl:kK:LMP:r:Rs:Sp:u:UVyZ]
 
 -h:	Print usage information
 -V:	Print version information
+-B: Backup server configuration
 -U:	Update ESX if newer patch level is available
 -Z:	Downgrade ESX to earlier release
 -L:	List all available versions in local patch directory
@@ -113,7 +114,6 @@ Usage: eclair.rb -[AbCDef:Hhl:kK:LMP:r:Rs:Sp:u:UVyZ]
 -y:	Perform action (if not given you will be prompted before upgrades)
 -S:	Setup ESXi (Syslog, NTP, etc)
 -l:	Check if a particular patch is in the local repository
--b:	Perform reboot after patch installation (not default)
 -k:	Show license keys
 -K:	Install license key
 -R:	Reboot server
@@ -209,7 +209,7 @@ Depot patch level is newer than installed version
 Updating an ESXi host from a patch in the local repository (without confirmation and reboot):
 
 ```
-$ ./eclair.rb -U -s 192.168.1.183 -f ESXi550-201404001 -y -b
+$ ./eclair.rb -U -s 192.168.1.183 -f ESXi550-201404001 -y -R
 File:  /Users/spindler/Code/eclair/patches/ESXi550-201404001.zip
 Current:   20140302001
 Available: 20140404001
@@ -474,6 +474,18 @@ Password:
 [200] Command Complete.
 Result: Success
 
+```
+
+Backup configuration of ESX server:
+
+```
+$ ./eclair.rb -s 192.168.1.223 -B
+Username: root
+Password: 
+Server:  192.168.1.223
+Command: vim-cmd hostsvc/firmware/backup_config
+Bundle can be downloaded at : http://*/downloads/52d0f4b1-1ac0-72e6-c184-3ca636ca9fd2/configBundle-esx03.tgz
+Copying: 192.168.1.223:/scratch/downloads/52d0f4b1-1ac0-72e6-c184-3ca636ca9fd2/configBundle-esx03.tgz to /tmp/configBundle-esx03.tgz
 ```
 
 List the patches in the local repository:

@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # Name:         eclair (ESX Command Line Automation In Ruby)
-# Version:      0.1.6
+# Version:      0.1.7
 # Release:      1
 # License:      CC-BA (Creative Commons By Attrbution)
 #               http://creativecommons.org/licenses/by/4.0/legalcode
@@ -26,7 +26,7 @@ require 'io/console'
 # Set some defaults
 
 script    = $0
-options   = "AbCDef:Hhl:kK:LMP:r:Rs:Sp:u:UVyZ"
+options   = "ABCDef:Hhl:kK:LMP:r:Rs:Sp:u:UVyZ"
 username  = ""
 password  = ""
 mode      = "check"
@@ -111,6 +111,7 @@ def print_usage(script,options)
   puts
   puts "-h:\tPrint usage information"
   puts "-V:\tPrint version information"
+  puts "-B:\tBackup ESX configuration"
   puts "-U:\tUpdate ESX if newer patch level is available"
   puts "-Z:\tDowngrade ESX to earlier release"
   puts "-L:\tList all available versions in local patch directory"
@@ -125,7 +126,6 @@ def print_usage(script,options)
   puts "-y:\tPerform action (if not given you will be prompted before upgrades)"
   puts "-S:\tSetup ESXi (Syslog, NTP, etc)"
   puts "-l:\tCheck if a particular patch is in the local repository"
-  puts "-b:\tPerform reboot after patch installation (not default)"
   puts "-k:\tShow license keys"
   puts "-K:\tInstall license key"
   puts "-R:\tReboot server"
@@ -325,6 +325,20 @@ def compare_versions(local_version,depot_version,mode)
   return update_available
 end
 
+# download file from server
+
+def download_server_file(hostname,username,password,remote_file,local_file)
+  Net::SCP.download!(hostname, username, remote_file, local_file, :ssh => { :password => password })
+  return
+end
+
+# upload file from server
+
+def upload_server_file(hostname,username,password,remote_file,local_file)
+  Net::SCP.upload!(hostname, username, remote_file, local_file, :ssh => { :password => password })
+  return
+end
+  
 # Actual routine to Update/Downgrade ESX host software
 
 def update_software(ssh_session,hostname,username,password,local_version,depot_version,filename,mode,doaction,depot_url,reboot)
@@ -370,8 +384,7 @@ def control_server(hostname,username,password,command)
   begin
     Net::SSH.start(hostname, username, :password => password, :paranoid => false) do |ssh_session|
       output = ssh_session.exec!(command)
-      puts output
-      return
+      return output
     end
   rescue Net::SSH::HostKeyMismatch => host
     puts "Existing key found for "+hostname
@@ -389,7 +402,7 @@ def control_server(hostname,username,password,command)
     end
     retry
   end
-  return
+  return output
 end
 
 # Main routing called to Update/Downgrade ESX software
@@ -607,6 +620,24 @@ end
 
 if opt["R"]
   command = "reboot"
+  reboot  = "y"
+end
+
+# If given -B run backup config command
+  
+if opt["B"]
+  command = "vim-cmd hostsvc/firmware/backup_config"
+end
+  
+# If given -f check file exists
+
+if opt["f"]
+  filename = opt["f"]
+  filename = check_file(filename,patchdir)
+end
+
+if opt["s"]
+  hostname = opt["s"]
 end
 
 # If given the -A or -R option check the available patches on the VMware site
@@ -633,12 +664,10 @@ if opt["M"] or opt["A"]
   exit
 end
 
-if opt["U"] or opt["C"] or opt["D"] or opt["K"] or opt["k"] or opt["H"] or opt["R"] or opt["e"]
-  if !opt["s"]
+if opt["U"] or opt["C"] or opt["D"] or opt["K"] or opt["k"] or opt["H"] or opt["R"] or opt["e"] or opt["B"]
+  if !hostname
     puts "No server name given"
     exit
-  else
-    hostname = opt["s"]
   end
   if username !~ /[A-z]/
     if !opt["u"]
@@ -654,16 +683,22 @@ if opt["U"] or opt["C"] or opt["D"] or opt["K"] or opt["k"] or opt["H"] or opt["
       password = opt["p"]
     end
   end
-  if opt["K"] or opt["k"] or opt["H"] or opt["R"] or opt["e"]
-    control_server(hostname,username,password,command)
+  if opt["U"] or opt["C"] or opt["Z"]
+    update_esxi(hostname,username,password,filename,mode,doaction,depot_url,reboot)
   else
-    if opt["f"]
-      filename = opt["f"]
-      filename = check_file(filename,patchdir)
-    end
-    hostname = opt["s"]
-    if opt["U"] or opt["C"] or opt["Z"]
-      update_esxi(hostname,username,password,filename,mode,doaction,depot_url,reboot)
+    if opt["K"] or opt["k"] or opt["H"] or opt["R"] or opt["e"] or opt["B"]
+      output = control_server(hostname,username,password,command)
+      puts output
+      if opt["B"]
+        remote_file = "/scratch/downloads/"+output.split(/\//)[-2..-1].join("/").chomp
+        if !filename or !filename.match(/[A-z]/)
+          local_file = "/tmp/"+remote_file.split(/\//)[-1]
+        else
+          local_file = filename
+        end
+        puts "Copying: "+hostname+":"+remote_file+" to "+local_file
+        download_server_file(hostname,username,password,remote_file,local_file)
+      end
     end
   end
   exit
