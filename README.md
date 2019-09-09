@@ -97,7 +97,7 @@ Usage: eclair.rb -[AbCDef:Hhl:kK:LMP:r:Rs:Sp:u:UVyZv]
 
 -h:	Print usage information
 -V:	Print version information
--B: Backup server configuration
+-B:   Backup server configuration
 -U:	Update ESX if newer patch level is available
 -Z:	Downgrade ESX to earlier release
 -L:	List all available versions in local patch directory
