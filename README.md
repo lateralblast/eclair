@@ -40,7 +40,7 @@ Some of the features include:
 Requirements
 ------------
 
-Required software to run exlair:
+Required software to run eclair:
 
 - ruby
 - wget
@@ -51,24 +51,22 @@ Required software to run exlair:
   - expect
   - getopt/std
   - selenium-webdriver
-  - phantomjs
   - nokogiri
   - io/console
 
 Installation
 ------------
 
+The script will try to install the gems if they are not present
+
 ```
 $ brew install wget
 $ gem install net-ssh
 $ gem install net-scp
 $ gem install etc
-$ grem install expect
+$ gem install expect
 $ gem install getopt
-$ gem install selenium
-$ selenium install
 $ gem install selenium-wbedriver
-$ gem install phantomjs
 $ gem install nokogiri -- --use-system--libraries
 ```
 
@@ -95,7 +93,7 @@ Usage
 You can find out the command line options available to you by using the -h option:
 
 ```
-Usage: eclair.rb -[AbCDef:Hhl:kK:LMP:r:Rs:Sp:u:UVyZ]
+Usage: eclair.rb -[AbCDef:Hhl:kK:LMP:r:Rs:Sp:u:UVyZv]
 
 -h:	Print usage information
 -V:	Print version information
@@ -119,6 +117,7 @@ Usage: eclair.rb -[AbCDef:Hhl:kK:LMP:r:Rs:Sp:u:UVyZ]
 -R:	Reboot server
 -H:	Shutdown server
 -e:	Execute a command on a server
+-v:   Verbose mode
 ```
 
 Examples

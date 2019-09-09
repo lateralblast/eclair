@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # Name:         eclair (ESX Command Line Automation In Ruby)
-# Version:      0.1.7
+# Version:      0.1.8
 # Release:      1
 # License:      CC-BA (Creative Commons By Attrbution)
 #               http://creativecommons.org/licenses/by/4.0/legalcode
@@ -13,20 +13,39 @@
 # Packager:     Richard Spindler <richard@lateralblast.com.au>
 # Description:  Ruby script to drive/setup ESX(i)
 
-require 'net/ssh'
-require 'net/scp'
-require 'etc'
-require 'expect'
-require 'getopt/std'
-require 'selenium-webdriver'
-require 'phantomjs'
-require 'nokogiri'
-require 'io/console'
+# Install gems if they can't be loaded
+
+def install_gem(gem_name)
+  if gem_name.match(/getopt/)
+    install_name = "getopt"
+  else
+    install_name = gem_name.gsub(/\//,"-")
+  end
+  puts "Information:\tInstalling #{install_name}"
+  %x[gem install #{install_name}]
+  Gem.clear_paths
+  require "#{gem_name}"
+end
+
+# Required gem list
+
+gem_list = [ "net/ssh", "net/scp", "etc", "expect", "getopt/std", 
+             "selenium-webdriver", "nokogiri", "io/console" ]
+
+# Try to load gems
+
+for gem_name in gem_list
+  begin
+    require "#{gem_name}"
+  rescue LoadError
+    install_gem(gem_name)
+  end
+end
 
 # Set some defaults
 
 script    = $0
-options   = "ABCDef:Hhl:kK:LMP:r:Rs:Sp:u:UVyZ"
+options   = "ABCDef:Hhl:kK:LMP:r:Rs:Sp:u:UVyZv"
 username  = ""
 password  = ""
 mode      = "check"
@@ -131,6 +150,7 @@ def print_usage(script,options)
   puts "-R:\tReboot server"
   puts "-H:\tShutdown server"
   puts "-e:\tExecute a command on a server"
+  puts "-v:\tVerbose mode"
   puts
   return
 end
@@ -234,6 +254,18 @@ if opt["b"]
   reboot = "y"
 end
 
+# Verbose mode
+
+if opt['v']
+  $verbose_mode = true
+else
+  $verbose_mode = false
+end
+
+# Create password file
+
+
+
 # Routine to check a file exists
 # If just given a patch number it tries to determine if a file that matches
 # the patch number is available in the repository.
@@ -256,25 +288,41 @@ end
 # Get the local version of update installed on and ES host
 
 def get_local_version(ssh_session,filename)
-  local_version = ssh_session.exec!("esxcli software vib list |grep 'esx-base' |awk '{print $2}'").chomp
+  (ssh_session,local_version) = ssh_session_exec(ssh_session,"esxcli software vib list |grep 'esx-base' |awk '{print $2}'")
+  local_version = local_version.chomp
+  if $verbose_mode == true
+    puts "vSphere release: "+local_version
+  end
   return ssh_session,local_version
 end
 
 # Get the local version of OS installed on and ES host
 
 def get_os_version(ssh_session)
-  os_version   = ssh_session.exec!("uname -r").chomp
+  (ssh_session,os_version) = ssh_session_exec(ssh_session,"uname -r")
+  os_version = os_version.chomp
+  if $verbose_mode == true
+    puts "vSphere version: "+os_version
+  end
   return ssh_session,os_version
+end
+
+def ssh_session_exec(ssh_session,command)
+  if $verbose_mode == true
+    puts "vSphere command: "+command
+  end
+  output = ssh_session.exec!(command)
+  return ssh_session,output
 end
 
 # Get the latest version of update available on the VMware site or in local repository
 
 def get_depot_version(ssh_session,filename,depot_url,os_version)
   if !filename.match(/[A-z]/)
-    ssh_session.exec!("esxcli network firewall ruleset set -e true -r httpClient")
-    depot_version = ssh_session.exec!("esxcli software sources vib list -d #{depot_url} 2>&1 | grep '#{os_version}' |grep 'esx-base' |grep Update |awk '{print $2}' |tail -1")
+    (ssh_session,output)        = ssh_session_exec(ssh_session,"esxcli network firewall ruleset set -e true -r httpClient")
+    (ssh_session,depot_version) = ssh_session_exec(ssh_session,"esxcli software sources vib list -d #{depot_url} 2>&1 | grep '#{os_version}' |grep 'esx-base' |grep Update |awk '{print $2}' |tail -1")
     if !depot_version
-      depot_version = ssh_session.exec!("esxcli software sources vib list -d #{depot_url} 2>&1 | grep '#{os_version}' |grep 'esx-base' |grep Installed |awk '{print $2}' |tail -1")
+      (ssh_sessionm,depot_version) = ssh_session_exec(ssh_session,"esxcli software sources vib list -d #{depot_url} 2>&1 | grep '#{os_version}' |grep 'esx-base' |grep Installed |awk '{print $2}' |tail -1")
     end
     depot_version = depot_version.chomp 
   else
@@ -285,6 +333,9 @@ def get_depot_version(ssh_session,filename,depot_url,os_version)
     %x[unzip -o #{filename} metadata.zip -d #{tmp_dir}]
     depot_version = %x[unzip -l #{tmp_dir}/metadata.zip |awk '{print $4}' |grep '^profiles' |grep standard].chomp
     depot_version = depot_version.split(/\//)[1].split("-")[0..-2].join("-")
+  end
+  if $verbose_mode == true
+    puts "Depot release: "+depot_version
   end
   return ssh_session,depot_version
 end
@@ -348,7 +399,7 @@ def update_software(ssh_session,hostname,username,password,local_version,depot_v
       patch_file = File.basename(filename)
       depot_dir  = "/scratch/downloads"
       depot_file = depot_dir+"/"+patch_file
-      ssh_session.exec!("mkdir #{depot_dir}")
+      (ssh_session,output) = ssh_session_exec(ssh_session,"mkdir #{depot_dir}")
       puts "Copying local file "+filename+" to "+hostname+":"+depot_file
       Net::SCP.upload!(hostname, username, filename, depot_file, :ssh => { :password => password })
     else
@@ -362,15 +413,15 @@ def update_software(ssh_session,hostname,username,password,local_version,depot_v
     end
     if doaction == "y"
       puts "Installing "+depot_version+" from "+depot_file
-      output = ssh_session.exec!("esxcli software vib update -d=#{depot_file}")
+      (ssh_session,output) = ssh_session_exec(ssh_session,"esxcli software vib update -d=#{depot_file}")
     else
       puts "Performing Dry Run - No updates will be installed"
-      output = ssh_session.exec!("esxcli software vib update -d=#{depot_file} --dry-run")
+      (ssh_session,output) = ssh_session_exec(ssh_session,"esxcli software vib update -d=#{depot_file} --dry-run")
     end
     puts output
     if output.match(/Reboot Required: true/) and reboot == "y"
       puts "Rebooting"
-      ssh_session.exec!("reboot")
+      (ssh_session,output) = ssh_session_exec(ssh_session,"reboot")
     end
   end
   return ssh_session
@@ -379,11 +430,13 @@ end
 # Run a command on the server
 
 def control_server(hostname,username,password,command)
-  puts "Server:  "+hostname
-  puts "Command: "+command
+  if $verbose_mode == true
+    puts "vSphere Server:  "+hostname
+    puts "vSphere Command: "+command
+  end
   begin
-    Net::SSH.start(hostname, username, :password => password, :paranoid => false) do |ssh_session|
-      output = ssh_session.exec!(command)
+    Net::SSH.start(hostname, username, :password => password, :verify_host_key => false) do |ssh_session|
+      (ssh_session,output) = ssh_session_exec(ssh_session,command)
       return output
     end
   rescue Net::SSH::HostKeyMismatch => host
@@ -408,11 +461,15 @@ end
 # Main routing called to Update/Downgrade ESX software
 
 def update_esxi(hostname,username,password,filename,mode,doaction,depot_url,reboot)
+  if $verbose_mode == true
+    puts "Connecting to: "+hostname
+  end
   begin
-    Net::SSH.start(hostname, username, :password => password, :paranoid => false) do |ssh_session|
+    Net::SSH.start(hostname, username, :password => password, :verify_host_key => false) do |ssh_session|
       (ssh_session,os_version)    = get_os_version(ssh_session)
       (ssh_session,local_version) = get_local_version(ssh_session,filename)
       (ssh_session,depot_version) = get_depot_version(ssh_session,filename,depot_url,os_version)
+      exit
       ssh_session = update_software(ssh_session,hostname,username,password,local_version,depot_version,filename,mode,doaction,depot_url,reboot)
     end
   rescue Net::SSH::HostKeyMismatch => host
@@ -454,7 +511,9 @@ end
 def get_vmware_patch_info(login_url,product_url,username,password,release)
   update_list = {}
   update = ""
-  driver = Selenium::WebDriver.for :phantomjs
+  options = Selenium::WebDriver::Firefox::Options.new
+  options.add_argument('--headless')
+  driver = Selenium::WebDriver.for :firefox
   driver.get(login_url)
   driver.find_element(:id => "username").send_keys(username)
   driver.find_element(:id => "password").send_keys(password)
@@ -515,84 +574,80 @@ if opt["L"]
   exit
 end
 
-# Get password
+# Update ESX password file
 
-def get_password(password)
-  while password !~/[A-z]|[0-9]/ do
-    print "Password: "
-    password = STDIN.noecho(&:gets).chomp
-  end
-  puts
-  return password
+def update_esx_passwd_file(esx_hostname,esx_username,esx_password)
+  esx_passwd_file = Dir.home+"/.esxpasswd"
+  FileUtils.touch(esx_passwd_file)
+  File.chmod(0600,esx_passwd_file)
+  output_text = esx_hostname+":"+esx_username+":"+esx_password
+  File.open(esx_passwd_file, 'a') { |file| file.write(output_text) }
+  return
 end
-  
 
-# If the password isn't given on the command line, try to retrieve it from
-# the .esxpasswd file. Otherwise ask for it.
+# Get ESX username
 
-def get_esx_password(paasword,esx_password_file,hostname)
-  if File.exist?(esx_password_file)
-    all_check = %x[cat #{esx_password_file} |egrep "^\\*:|^ALL:"]
-    if all_check.match(/\*|ALL/)
-      password = %x[cat #{esx_password_file} |cut -f3 -d:].chomp
-    else
-      password = %x[cat #{esx_password_file} |grep '^#{hostname}' |cut -f3 -d:].chomp
+def get_esx_username()
+  esx_username = ""
+  while esx_username !~ /[A-z]/
+    print "ESX Username: "
+    STDOUT.flush
+    esx_username = gets.chomp
+  end
+  return esx_username
+end
+
+# Get ESX password
+
+def get_esx_password()
+  esx_password = ""
+  while esx_password !~/[A-Z]|[a-z]|[0-9]/ do
+    print "ESX Password: "
+    STDOUT.flush
+    esx_password = STDIN.noecho(&:gets).chomp
+  end
+  return esx_password
+end
+
+# If a ~/,esxpasswd doesn't exist ask for details
+
+def get_esx_details(esx_hostname)
+  esx_passwd_file = Dir.home+"/.esxpasswd"
+  esx_host_found  = false
+  esx_info_change = false
+  if !File.exist?(esx_passwd_file)
+    esx_username = get_esx_username()
+    esx_password = get_esx_password()
+    update_esx_passwd_file(esx_hostname,esx_username,esx_password)
+  else
+    esx_data = File.readlines(esx_passwd_file)
+    esx_data.each do |line|
+      line.chomp
+      if line.match(/^#{esx_hostname}:/)
+        esx_host_found = true
+        esx_details    = line.split(/:/)
+        esx_username   = esx_details[1]
+        if esx_username !~/[A-Z]|[a-z]/
+          esx_username    = get_esx_username()
+          esx_info_change = true
+        end
+        esx_password   = esx_details[2]
+        if esx_password !~/[A-Z]|[a-z]|[0-9]/
+          esx_password    = get_esx_password()
+          esx_info_change = true
+        end
+        if esx_info_change == true
+          update_esx_passwd_file(esx_hostname,esx_username,esx_password)
+        end
+      end
     end
-  else
-    password = get_password(password)
-  end
-  return password
-end
-
-# If the password isn't given on the command line, try to retrieve it from
-# the .vmwarepasswd file. Otherwise ask for it.
-
-def get_vmware_password(password,vmware_password_file)
-  if File.exist?(vmware_password_file)
-    password = %x[cat #{vmware_password_file} |cut -f2 -d:].chomp
-  else
-    password = get_username(password)
-  end
-  return password
-end
-
-# Get username
-
-def get_username(username)
-  while username !~ /[A-z]/
-    print "Username: "
-    username = gets.chomp
-  end
-  return username
-end
-  
-# If the username isn't given on the command line, try to retrieve it from
-# the .esxpasswd file. Otherwise ask for it.
-
-def get_esx_username(username,esx_password_file,hostname)
-  if File.exist?(esx_password_file)
-    all_check = %x[cat #{esx_password_file} |egrep "^\\*:|^ALL:"]
-    if all_check.match(/\*|ALL/)
-      username = %x[cat #{esx_password_file} |cut -f2 -d:].chomp
-    else
-      username = %x[cat #{esx_password_file} |grep '^#{hostname}' |cut -f2 -d:].chomp
+    if esx_host_found == false
+      esx_username = get_esx_username()
+      esx_password = get_esx_password()
+      update_esx_passwd_file(esx_hostname,esx_username,esx_password)
     end
-  else
-    username = get_username(username)
   end
-  return username
-end
-
-# If the username isn't given on the command line, try to retrieve it from
-# the .vmwarepasswd file. Otherwise ask for it.
-
-def get_vmware_username(username,vmware_password_file)
-  if File.exist?(vmware_password_file)
-    username = %x[cat #{vmware_password_file} |cut -f1 -d:].chomp
-  else
-    username = get_username(username)
-  end
-  return username
+  return esx_username,esx_password
 end
 
 # Check if a particular patch is in the local repository
@@ -671,14 +726,14 @@ if opt["U"] or opt["C"] or opt["D"] or opt["K"] or opt["k"] or opt["H"] or opt["
   end
   if username !~ /[A-z]/
     if !opt["u"]
-      username = get_esx_username(username,esx_password_file,hostname)
+      (username,password) = get_esx_details(hostname)
     else
       username = opt["u"]
     end
   end
   if password !~ /[A-z]/
     if !opt["p"]
-      password = get_esx_password(password,esx_password_file,hostname)
+      (username,password) = get_esx_details(hostname)
     else
       password = opt["p"]
     end
